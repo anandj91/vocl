@@ -51,3 +51,29 @@ cl_int clGetPlatformIDs(cl_uint num_entries,
     return voclGetPlatformIDs(num_entries, platforms, num_platforms);
 }
 
+cl_int (*voclEnqueueNDRangeKernel)(cl_command_queue command_queue,
+		cl_kernel kernel,
+		cl_uint work_dim,
+		const size_t *global_work_offset,
+		const size_t *global_work_size,
+		const size_t *local_work_size,
+		cl_uint num_events_in_wait_list,
+		const cl_event *event_wait_list,
+		cl_event *event) = NULL;
+
+cl_int clEnqueueNDRangeKernel(cl_command_queue command_queue,
+		cl_kernel kernel,
+		cl_uint work_dim,
+		const size_t *global_work_offset,
+		const size_t *global_work_size,
+		const size_t *local_work_size,
+		cl_uint num_events_in_wait_list,
+		const cl_event *event_wait_list,
+		cl_event *event)
+{
+    fprintf(stdout, "clEnqueueNDRangeKernel intercepted!!!\n");
+    voclEnqueueNDRangeKernel = dlsym(RTLD_NEXT, "clEnqueueNDRangeKernel");
+    return voclEnqueueNDRangeKernel(command_queue, kernel, work_dim,
+            global_work_offset, global_work_size, local_work_size,
+            num_events_in_wait_list, event_wait_list, event);
+}
