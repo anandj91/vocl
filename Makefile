@@ -45,14 +45,15 @@ LIBRARIES += -ldl
 all: build
 
 build: libvocl.so.1
+	mv libvocl.so.1 libvocl.so
 
-libvocl.o: libvocl.c
-	$(CC) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
+libvocl.o: libvocl.cpp
+	$(CXX) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
 
 libvocl.so.1: libvocl.o
-	$(CC) -shared $(LDFLAGS) -o $@ $+ $(LIBRARIES)
+	$(CXX) -shared $(LDFLAGS) -o $@ $+ $(LIBRARIES)
 
 clean:
-	rm -f libvocl.o libvocl.so.1
+	rm -f libvocl.o libvocl.so
 
 clobber: clean
