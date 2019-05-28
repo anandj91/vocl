@@ -31,5 +31,9 @@ typedef cl_int (*fnClEnqueueNDRangeKernel)(cl_command_queue,
 
 typedef cl_int (*fnClWaitForEvents)(cl_uint, const cl_event*);
 
+typedef cl_int (*fnClSetKernelArg)(cl_kernel kernel,
+        cl_uint arg_index,
+        size_t arg_size,
+        const void *arg_value);
 
 #endif /* _VOCL_H_ */
