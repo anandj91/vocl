@@ -74,3 +74,54 @@ cl_int voclEnqueueReadBuffer(fnclEnqueueReadBuffer real_fn,
     fprintf(stdout, "clEnqueueReadBuffer %lx\n", buffer);
     return ret;
 }
+
+cl_int voclEnqueueReadBufferRect(fnclEnqueueReadBufferRect real_fn,
+        cl_command_queue command_queue,
+        cl_mem buffer,
+        cl_bool blocking_read,
+        const size_t *buffer_origin,
+        const size_t *host_origin,
+        const size_t *region,
+        size_t buffer_row_pitch,
+        size_t buffer_slice_pitch,
+        size_t host_row_pitch,
+        size_t host_slice_pitch,
+        void *ptr,
+        cl_uint num_events_in_wait_list,
+        const cl_event *event_wait_list,
+        cl_event *event)
+{
+    auto ret = real_fn(command_queue, buffer, blocking_read, buffer_origin,
+            host_origin, region, buffer_row_pitch, buffer_slice_pitch,
+            host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list,
+            event_wait_list, event);
+    fprintf(stdout, "clEnqueueReadBufferRect %lx\n", buffer);
+    return ret;
+}
+
+cl_int voclEnqueueWriteBuffer(fnclEnqueueWriteBuffer real_fn,
+        cl_command_queue command_queue,
+        cl_mem buffer,
+        cl_bool blocking_write,
+        size_t offset,
+        size_t cb,
+        const void *ptr,
+        cl_uint num_events_in_wait_list,
+        const cl_event *event_wait_list,
+        cl_event *event)
+{
+    auto ret = real_fn(command_queue, buffer, blocking_write, offset, cb, ptr,
+            num_events_in_wait_list, event_wait_list, event);
+    fprintf(stdout, "clEnqueueWriteBuffer %lx\n", buffer);
+    return ret;
+}
+
+cl_int voclGetPlatformIDs(fnclGetPlatformIDs real_fn,
+        cl_uint num_entries,
+        cl_platform_id *platforms,
+        cl_uint *num_platforms)
+{
+    auto ret = real_fn(num_entries, platforms, num_platforms);
+    fprintf(stdout, "clGetPlatformIDs\n");
+    return ret;
+}
