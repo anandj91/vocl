@@ -21,7 +21,7 @@ class VoclImpl : public Vocl {
 	    int i = num_events_in_wait_list;
 	    do {
 	        fflush(stdout);
-	        fprintf(stdout, "clEnqueueNDRangeKernel %lx: %lx %lx\n", kernel,
+	        fprintf(stdout, "EnqueueNDRangeKernel %lx: %lx %lx\n", kernel,
 	                (i-- > 0) ? event_wait_list[i] : NULL, *event);
 	        fflush(stdout);
 	    } while (i > 0);
@@ -36,7 +36,7 @@ class VoclImpl : public Vocl {
 	        const void *arg_value)
 	{
 	    auto ret = real_fn(kernel, arg_index, arg_size, arg_value);
-	    fprintf(stdout, "clSetKernelArg %lx %lx\n", kernel, *(uint64_t*)arg_value);
+	    fprintf(stdout, "SetKernelArg %lx %lx\n", kernel, *(uint64_t*)arg_value);
 	    return ret;
 	}
 	
@@ -48,8 +48,27 @@ class VoclImpl : public Vocl {
 	        cl_int *errcode_ret)
 	{
 	    auto ret = real_fn(context, flags, size, host_ptr, errcode_ret);
-	    fprintf(stdout, "clCreateBuffer %lx\n", ret);
+	    fprintf(stdout, "CreateBuffer %lx\n", ret);
 	    return ret;
+	}
+
+	void* EnqueueMapBuffer(EnqueueMapBuffer_t real_fn,
+			cl_command_queue command_queue,
+			cl_mem buffer,
+			cl_bool blocking_map,
+			cl_map_flags map_flags,
+			size_t offset,
+			size_t cb,
+			cl_uint num_events_in_wait_list,
+			const cl_event *event_wait_list,
+			cl_event *event,
+			cl_int *errcode_ret)
+	{
+        auto ret = real_fn(command_queue, buffer, blocking_map, map_flags,
+                offset, cb, num_events_in_wait_list,
+                event_wait_list, event, errcode_ret);
+        fprintf(stdout, "EnqueueMapBuffer %lx\n", buffer);
+        return ret;
 	}
 };
 
