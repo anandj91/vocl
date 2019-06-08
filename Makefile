@@ -36,24 +36,28 @@
 CCFLAGS   := -fPIC
 LDFLAGS   := 
 
-INCLUDES  := -I/usr/local/cuda/include/
+INCLUDES  :=
+INCLUDES  += -I/usr/local/cuda/include/ -I./include/
 
 LIBRARIES := 
 LIBRARIES += -ldl
 
+SRC_DIR := src
+BUILD_DIR := build
+LIB_DIR   := lib
+
 # Target rules
 all: build
 
-build: libvocl.so.1
-	mv libvocl.so.1 libvocl.so
+build: $(LIB_DIR)/libvocl.so
 
-libvocl.o: libvocl.cpp
-	$(CXX) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
-
-libvocl.so.1: libvocl.o
+$(LIB_DIR)/libvocl.so: $(BUILD_DIR)/vocl.o
+	mkdir -p $(LIB_DIR)
 	$(CXX) -shared $(LDFLAGS) -o $@ $+ $(LIBRARIES)
 
-clean:
-	rm -f libvocl.o libvocl.so
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
 
-clobber: clean
+clean:
+	rm -rf $(LIB_DIR) $(BUILD_DIR)
