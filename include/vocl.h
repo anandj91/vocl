@@ -56,7 +56,6 @@ static void* real_dlsym(void *handle, const char* symbol)
     virtual ret_type funcname ADD_ELEM(params, FN_TYPE(funcname) real_fn) \
     { \
         auto ret = real_fn(__VA_ARGS__); \
-        fprintf(stdout, "%s intercepted\n", STRINGIFY(funcname)); \
         return ret; \
     } \
 
