@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "vocl.h"
 
-
 class VoclImpl : public Vocl {
   public:
     cl_int EnqueueNDRangeKernel(EnqueueNDRangeKernel_t real_fn,

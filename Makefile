@@ -43,6 +43,7 @@ LIBRARIES :=
 LIBRARIES += -ldl
 
 SRC_DIR := src
+INC_DIR := include
 BUILD_DIR := build
 LIB_DIR   := lib
 
@@ -55,7 +56,7 @@ $(LIB_DIR)/libvocl.so: $(BUILD_DIR)/vocl.o
 	mkdir -p $(LIB_DIR)
 	$(CXX) -shared $(LDFLAGS) -o $@ $+ $(LIBRARIES)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp ${INC_DIR}/%.h
 	mkdir -p $(BUILD_DIR)
 	$(CXX) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
 
