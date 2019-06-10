@@ -298,6 +298,12 @@ static void* real_dlsym(void *handle, const char* symbol)
 	((cl_int, Flush, (cl_command_queue command_queue), command_queue)) \
 	\
 	((cl_int, Finish, (cl_command_queue command_queue), command_queue)) \
+    \
+    ((cl_int, EnqueueMarkerWithWaitList, (cl_command_queue command_queue, \
+                                          cl_uint num_events_in_wait_list, \
+                                          const cl_event *event_wait_list, \
+                                          cl_event *event), \
+         command_queue, num_events_in_wait_list, event_wait_list, event))
 
 /**
  * OpenCL function types
