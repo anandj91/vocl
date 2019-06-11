@@ -60,5 +60,12 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp ${INC_DIR}/%.h
 	mkdir -p $(BUILD_DIR)
 	$(CXX) $(INCLUDES) $(CCFLAGS) -o $@ -c $<
 
+.PHONY: test
+test: build
+	$(CC) $(INCLUDES) -lOpenCL -L/usr/local/cuda/lib64 test/test.c
+	LD_PRELOAD=./lib/libvocl.so ./a.out
+	rm a.out
+
+.PHONY: clean
 clean:
 	rm -rf $(LIB_DIR) $(BUILD_DIR)
