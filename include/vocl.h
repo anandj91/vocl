@@ -2,6 +2,7 @@
 #define _VOCL_H_
 
 #include <iostream>
+#include <vector>
 #include "base.h"
 
 /*
@@ -192,7 +193,9 @@
                                cl_uint num_input_headers, \
                                const cl_program *input_headers, \
                                const char **header_include_names, \
-                               void (CL_CALLBACK *pfn_notify)(cl_program program, void *user_data), \
+                               void (CL_CALLBACK *pfn_notify)( \
+                                   cl_program program, \
+                                   void *user_data), \
                                void *user_data), \
 		program, num_devices, device_list, options, num_input_headers, \
 		input_headers, header_include_names, pfn_notify, user_data)) \
@@ -220,7 +223,10 @@
 	\
     ((cl_int, SetEventCallback, (cl_event event, \
                                  cl_int command_exec_callback_type, \
-                                 void (CL_CALLBACK  *pfn_event_notify)(cl_event event, cl_int event_command_exec_status, void *user_data), \
+                                 void (CL_CALLBACK *pfn_event_notify)( \
+                                     cl_event event, \
+                                     cl_int event_command_exec_status, \
+                                     void *user_data), \
                                  void *user_data), \
 		event, command_exec_callback_type, pfn_event_notify, user_data)) \
 	\
@@ -232,7 +238,25 @@
                                           cl_uint num_events_in_wait_list, \
                                           const cl_event *event_wait_list, \
                                           cl_event *event), \
-         command_queue, num_events_in_wait_list, event_wait_list, event))
+         command_queue, num_events_in_wait_list, event_wait_list, event)) \
+    \
+    ((cl_command_queue, CreateCommandQueue, (cl_context context, \
+                                             cl_device_id device, \
+                                             cl_command_queue_properties properties, \
+                                             cl_int *errcode_ret), \
+        context, device, properties, errcode_ret)) \
+    \
+    ((cl_context, CreateContext, (const cl_context_properties *properties, \
+                                  cl_uint num_devices, \
+                                  const cl_device_id *devices, \
+                                  void (CL_CALLBACK *pfn_notify)( \
+                                      const char *errinfo, \
+                                      const void *private_info, \
+                                      size_t cb, \
+                                      void *user_data), \
+                                  void *user_data, \
+                                  cl_int *errcode_ret), \
+        properties, num_devices, devices, pfn_notify, user_data, errcode_ret))
 
 
 /**
@@ -245,28 +269,31 @@ FOR_EACH(BUILD_REAL, CL_CALLS)
  */
 class Vocl {
   public:
-    Vocl()
+    Vocl() {}
+
+    void init()
     {
-        //init_ctx();
+        cl_platform_id platform_id[2];
+        cl_device_id device_id[2];
+        cl_int ret = real_GetPlatformIDs(2, platform_id, NULL);
+        ret = real_GetDeviceIDs(platform_id[1], CL_DEVICE_TYPE_GPU, 2, device_id,
+                NULL);
+        ctx = real_CreateContext(NULL, 2, device_id, NULL, NULL, &ret);
+        queues.push_back(real_CreateCommandQueue(ctx, device_id[0], 0, &ret));
+        queues.push_back(real_CreateCommandQueue(ctx, device_id[1], 0, &ret));
     }
 
     FOR_EACH(BUILD_VOCL, CL_CALLS)
 
   protected:
-    void init_ctx()
-    {
-        cl_platform_id platform_id = NULL;
-        cl_device_id device_id = NULL;
-        cl_uint ret_num_platforms;
-        cl_uint ret_num_devices;
+    cl_context ctx;
+    std::vector<cl_command_queue> queues;
 
-		cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-		ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_DEFAULT, 1, 
-				&device_id, &ret_num_devices);
-        cl_context context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
-    }
+};
 
-  private:
+class VoclFactory {
+  public:
+    static Vocl* Get();
 };
 
 #endif /* _VOCL_H_ */

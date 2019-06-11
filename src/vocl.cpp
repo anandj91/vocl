@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <mutex>
 #include "vocl.h"
 
 class VoclImpl : public Vocl {
@@ -120,7 +121,20 @@ class VoclImpl : public Vocl {
 
 };
 
-static Vocl* vocl = new VoclImpl();
+Vocl* VoclFactory::Get()
+{
+    static Vocl* vocl = NULL;
+    static std::mutex mu_;
+    if (!vocl) {
+        mu_.lock();
+        if (!vocl) {
+            vocl = new VoclImpl();
+            vocl->init();
+        }
+        mu_.unlock();
+    }
+    return vocl;
+}
 
 /**
  * Dynamic Intercepts

@@ -50,7 +50,7 @@ static void* real_dlsym(void *handle, const char* symbol)
 #define BUILD_OCL_HELPER(ret_type, funcname, params, ...) \
     ret_type OCL_FN(funcname) params \
     { \
-        ret_type ret = vocl->VOCL_FN(funcname)(__VA_ARGS__); \
+        ret_type ret = VoclFactory::Get()->VOCL_FN(funcname)(__VA_ARGS__); \
         return ret; \
     } \
 
