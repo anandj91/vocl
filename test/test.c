@@ -77,33 +77,39 @@ int main(void) {
     ret = clSetKernelArg(init, 0, sizeof(cl_mem), (void *)&a_mem_obj);
     a = 10;
     ret = clSetKernelArg(init, 1, sizeof(int), (void *)&a);
+    cl_event init_a;
     ret = clEnqueueNDRangeKernel(command_queue, init, 1, NULL, 
-            &global_item_size, &local_item_size, 0, NULL, NULL);
+            &global_item_size, &local_item_size, 0, NULL, &init_a);
 
     ret = clSetKernelArg(init, 0, sizeof(cl_mem), (void *)&b_mem_obj);
     a = 20;
     ret = clSetKernelArg(init, 1, sizeof(int), (void *)&a);
+    cl_event init_b;
     ret = clEnqueueNDRangeKernel(command_queue, init, 1, NULL, 
-            &global_item_size, &local_item_size, 0, NULL, NULL);
+            &global_item_size, &local_item_size, 0, NULL, &init_b);
 
     // Run vecadds
     ret = clSetKernelArg(vecadd, 0, sizeof(cl_mem), (void *)&a_mem_obj);
     ret = clSetKernelArg(vecadd, 1, sizeof(cl_mem), (void *)&a_mem_obj);
     ret = clSetKernelArg(vecadd, 2, sizeof(cl_mem), (void *)&a_mem_obj);
+    cl_event vecadd_a;
     ret = clEnqueueNDRangeKernel(command_queue, vecadd, 1, NULL, 
-            &global_item_size, &local_item_size, 0, NULL, NULL);
+            &global_item_size, &local_item_size, 1, &init_a, &vecadd_a);
 
     ret = clSetKernelArg(vecadd, 0, sizeof(cl_mem), (void *)&b_mem_obj);
     ret = clSetKernelArg(vecadd, 1, sizeof(cl_mem), (void *)&b_mem_obj);
     ret = clSetKernelArg(vecadd, 2, sizeof(cl_mem), (void *)&b_mem_obj);
+    cl_event vecadd_b;
     ret = clEnqueueNDRangeKernel(command_queue, vecadd, 1, NULL, 
-            &global_item_size, &local_item_size, 0, NULL, NULL);
+            &global_item_size, &local_item_size, 1, &init_b, &vecadd_b);
 
     ret = clSetKernelArg(vecadd, 0, sizeof(cl_mem), (void *)&a_mem_obj);
     ret = clSetKernelArg(vecadd, 1, sizeof(cl_mem), (void *)&b_mem_obj);
     ret = clSetKernelArg(vecadd, 2, sizeof(cl_mem), (void *)&c_mem_obj);
+    cl_event dep_vecadd_c[2] = {vecadd_a, vecadd_b};
+    cl_event vecadd_c;
     ret = clEnqueueNDRangeKernel(command_queue, vecadd, 1, NULL, 
-            &global_item_size, &local_item_size, 0, NULL, NULL);
+            &global_item_size, &local_item_size, 2, dep_vecadd_c, &vecadd_c);
 
     // Read the memory buffer C on the device to the local variable C
     int *C = (int*)malloc(sizeof(int)*LIST_SIZE);
