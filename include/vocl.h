@@ -264,6 +264,8 @@
  */
 FOR_EACH(BUILD_REAL, CL_CALLS)
 
+namespace vocl {
+
 /**
  * vocl class
  */
@@ -295,5 +297,7 @@ class VoclFactory {
   public:
     static Vocl* Get();
 };
+
+}
 
 #endif /* _VOCL_H_ */

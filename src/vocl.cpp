@@ -2,6 +2,8 @@
 #include <mutex>
 #include "vocl.h"
 
+using namespace vocl;
+
 class VoclImpl : public Vocl {
   public:
     cl_int EnqueueNDRangeKernel(cl_command_queue command_queue,
