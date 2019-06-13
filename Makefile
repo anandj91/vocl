@@ -62,9 +62,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp ${INC_DIR}/%.h
 
 .PHONY: test
 test: build
-	$(CC) $(INCLUDES) -lOpenCL -L/usr/local/cuda/lib64 test/test.c
-	LD_PRELOAD=./lib/libvocl.so ./a.out
-	rm a.out
+	$(CXX) $(INCLUDES) -lOpenCL -L/usr/local/cuda/lib64 -o test.out test/test.cpp
+	$(CXX) $(INCLUDES) -lOpenCL -L/usr/local/cuda/lib64 -o test_dist.out test/test_dist.cpp
 
 .PHONY: clean
 clean:
